@@ -10,7 +10,8 @@ function currencyNotFound() {
   // $("#currency-not-found").show();
 }
 
-function showExchangeRate(response) {
+function showExchangeRate(userQuery) {
+  const response = userQuery.response;
   if (response) {
     if (response.result === "success") {
       // const someCurrencyProbably = response.PROPERTY;
@@ -20,13 +21,13 @@ function showExchangeRate(response) {
       // $("#output-result").html(`${response.PROPERTY}`);
     }
   }
-}  
+}
 
-async function parseBaseCurrency(doFetch, inputCurrency) {
+async function parseBaseCurrency(userQuery) {
   let response;
-  if (doFetch) {
-    console.log(`Query not yet cached: fetching ${inputCurrency} data via API`);
-    response = await ExchangeService.getExchangeRates(inputCurrency);
+  if (userQuery.do_fetch) {
+    console.log(`Query not yet cached: fetching ${userQuery.input_currency} data via API`);
+    response = await ExchangeService.getExchangeRates(userQuery.input_currency);
     CACHED_RESPONSES.push(response);
   } else {
     console.log(`Query is cached: bypassing API fetch`);
@@ -40,7 +41,8 @@ async function parseBaseCurrency(doFetch, inputCurrency) {
     // $("#currency-not-found").hide();
     console.log(`Received exchange rates based on currency: ${response.base_code}`);
     // response.PROPERTY = outputCurrency;
-    showExchangeRate(response);
+    userQuery.response = response;
+    showExchangeRate(userQuery);
   }
 }
 
@@ -68,10 +70,17 @@ $(document).ready(function () {
     const outputCurrency = $("#output-currency").val().toUpperCase();
     console.log(inputQuantity, inputCurrency, outputCurrency);
 
-    // returns 'true' if the base unit is not yet stored/fetched
+    // returns 'true' if the base unit is not yet fetched/cached
     const doFetch = requestNotCached(inputCurrency);
 
-    parseBaseCurrency(doFetch, inputCurrency);
+    const userQuery = {
+      do_fetch: doFetch,
+      input_quantity: inputQuantity,
+      input_currency: inputCurrency,
+      output_currency: outputCurrency
+    };
+
+    parseBaseCurrency(userQuery);
     // Refactor this to search the array for the correct response (instead of just the most recent one)
     // inputCurrencyResponse = CACHED_RESPONSES[CACHED_RESPONSES.length - 1];
   });
