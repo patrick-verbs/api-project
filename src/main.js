@@ -35,9 +35,11 @@ async function parseExchangeRate(inputCurrency, outputCurrency) {
 }
 
 $(document).ready(function () {
-  $('#currency-submit').on("click", "other stuff", function() {
-    let inputCurrency = $('#text-input1').text().toLowerCase();
-    let outputCurrency = $('#text-input2').text().toLowerCase();
-    parseExchangeRate(inputCurrency, outputCurrency);
+  $("#currency-submit").on("click", function() {
+    const inputQuantity = $("#input-quantity").val();
+    const inputCurrency = $("#input-currency").val().toUpperCase();
+    const outputCurrency = $("#output-currency").val().toUpperCase();
+    console.log(inputQuantity, inputCurrency, outputCurrency);
+    // parseExchangeRate(inputCurrency, outputCurrency);
   });
 });
