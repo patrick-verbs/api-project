@@ -12,14 +12,26 @@ function currencyNotFound() {
 
 function showExchangeRate(userQuery) {
   const response = userQuery.response;
-  if (response) {
-    if (response.result === "success") {
-      // const someCurrencyProbably = response.PROPERTY;
-      $("#output-result").html(`<h1>Here's the API query result: ${response.result}</h1>`);
-    // } else if (response.PROPERTY === "OTHER VALUE") {
-      // const someOtherCurrencyMaybe = response.PROPERTY;
-      // $("#output-result").html(`${response.PROPERTY}`);
+  const allCurrencies = userQuery.response.conversion_rates;
+
+  let conversionRate;
+
+  for (const currency in allCurrencies) {
+    console.log(`${currency}: ${allCurrencies[currency]}`);
+    if (currency === userQuery.output_currency) {
+      conversionRate = allCurrencies[currency];
+      break;
     }
+  }
+
+  const result = userQuery.input_quantity * conversionRate;
+
+  if (response.result === "success") {
+    // const someCurrencyProbably = response.PROPERTY;
+    $("#output-result").html(`<h3>Here's the API query result: ${result}</h3>`);
+  // } else if (response.PROPERTY === "OTHER VALUE") {
+    // const someOtherCurrencyMaybe = response.PROPERTY;
+    // $("#output-result").html(`${response.PROPERTY}`);
   }
 }
 
