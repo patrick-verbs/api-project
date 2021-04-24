@@ -40,7 +40,7 @@ async function parseBaseCurrency(userQuery) {
   if (userQuery.do_fetch) {
     console.log(`Query not yet cached: fetching ${userQuery.input_currency} data via API`);
     response = await ExchangeService.getExchangeRates(userQuery.input_currency);
-    CACHED_RESPONSES.push(response);
+    CACHED_RESPONSES.unshift(response);
   } else {
     console.log(`Query is cached: bypassing API fetch`);
     response = CACHED_RESPONSES[0];
@@ -69,6 +69,7 @@ function requestNotCached(currencyCode) {
 }
 
 $(document).ready(function () {
+  let latestCache;
   // Refactor this to choose the input currency on the first menu
   // ...then fetch, and create <select> options from the "result.conversion_rates" entries
   // ...and therefore do NOT fetch when a user requests a conversion; just do the math
@@ -80,7 +81,15 @@ $(document).ready(function () {
     const inputQuantity = $("#input-quantity").val();
     const inputCurrency = $("#input-currency").val().toUpperCase();// All 3-letter currency values in ExchangeRate-API are uppercase
     const outputCurrency = $("#output-currency").val().toUpperCase();
-    console.log(inputQuantity, inputCurrency, outputCurrency);
+
+
+    for (let i = 0; i < CACHED_RESPONSES.length; i++) {
+      for (const currency in CACHED_RESPONSES[i]) {
+        if (inputCurrency === userQuery.output_currency) {
+          conversionRate = allCurrencies[currency];
+        }
+      }
+    }
 
     // returns 'true' if the base unit is not yet fetched/cached
     const doFetch = requestNotCached(inputCurrency);
