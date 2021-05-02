@@ -9,23 +9,35 @@ function currencyNotFound() {
   // $("#currency-not-found").show();
 }
 
+function buildInputOptions(currencyCode) {
+  let arrayOfCurrencies = [];
+  for (const currency in currencyCode) {
+    arrayOfCurrencies.push(currency);
+  }
+  let html = "";
+  for (let i = 0; i < arrayOfCurrencies.length; i++) {
+    html += `<option value="${arrayOfCurrencies[i]}" require>${arrayOfCurrencies[i]}</option>`;
+  }
+  return html;
+}
+
 function showExchangeRate(userQuery) {
   const response = userQuery.response;
   const allCurrencies = userQuery.response.conversion_rates;
 
   let conversionRate;
-  let html;
+  // let html;
 
   for (const currency in allCurrencies) {
     console.log(`${currency}: ${allCurrencies[currency]}`);
-    html += currency;
+    // html += currency;
     if (currency === userQuery.output_currency) {
       conversionRate = allCurrencies[currency];
       break;
     }
   }
 
-  const convertedCurrency = userQuery.input_quantity * conversionRate;
+  const convertedCurrency = (userQuery.input_quantity * conversionRate).toFixed(2);
 
   if (response.result === "success") {
     // const someCurrencyProbably = response.PROPERTY;
@@ -70,7 +82,9 @@ function requestNotCached(currencyCode) {
 }
 
 $(document).ready(function () {
-  let latestCache;
+  let latestCache = CACHED_RESPONSES[0];
+  const html = buildInputOptions(latestCache.conversion_rates);
+  $("#output-currency").html(html);
   // Refactor this to choose the input currency on the first menu
   // ...then fetch, and create <select> options from the "result.conversion_rates" entries
   // ...and therefore do NOT fetch when a user requests a conversion; just do the math
@@ -82,15 +96,6 @@ $(document).ready(function () {
     const inputQuantity = $("#input-quantity").val();
     const inputCurrency = $("#input-currency").val().toUpperCase();// All 3-letter currency values in ExchangeRate-API are uppercase
     const outputCurrency = $("#output-currency").val().toUpperCase();
-
-
-    for (let i = 0; i < CACHED_RESPONSES.length; i++) {
-      for (const currency in CACHED_RESPONSES[i]) {
-        if (inputCurrency === userQuery.output_currency) {
-          conversionRate = allCurrencies[currency];
-        }
-      }
-    }
 
     // returns 'true' if the base unit is not yet fetched/cached
     const doFetch = requestNotCached(inputCurrency);
