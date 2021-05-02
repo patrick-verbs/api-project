@@ -2,9 +2,8 @@ import $ from 'jquery';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/styles.css';
+import CACHED_RESPONSES from './js/cache.js';
 import ExchangeService from './js/exchange-rate-service.js';
-
-const CACHED_RESPONSES = [];
 
 function currencyNotFound() {
   // $("#currency-not-found").show();
@@ -15,20 +14,22 @@ function showExchangeRate(userQuery) {
   const allCurrencies = userQuery.response.conversion_rates;
 
   let conversionRate;
+  let html;
 
   for (const currency in allCurrencies) {
     console.log(`${currency}: ${allCurrencies[currency]}`);
+    html += currency;
     if (currency === userQuery.output_currency) {
       conversionRate = allCurrencies[currency];
       break;
     }
   }
 
-  const result = userQuery.input_quantity * conversionRate;
+  const convertedCurrency = userQuery.input_quantity * conversionRate;
 
   if (response.result === "success") {
     // const someCurrencyProbably = response.PROPERTY;
-    $("#output-result").html(`<h3>Here's the API query result: ${result}</h3>`);
+    $("#output-result").html(`<h3>Here's the API query result: ${convertedCurrency}</h3>`);
   // } else if (response.PROPERTY === "OTHER VALUE") {
     // const someOtherCurrencyMaybe = response.PROPERTY;
     // $("#output-result").html(`${response.PROPERTY}`);
@@ -37,7 +38,7 @@ function showExchangeRate(userQuery) {
 
 async function parseBaseCurrency(userQuery) {
   let response;
-  if (userQuery.do_fetch) {
+  if (userQuery.do_fetch === true) {
     console.log(`Query not yet cached: fetching ${userQuery.input_currency} data via API`);
     response = await ExchangeService.getExchangeRates(userQuery.input_currency);
     CACHED_RESPONSES.unshift(response);
@@ -52,7 +53,7 @@ async function parseBaseCurrency(userQuery) {
   } else {
     // $("#currency-not-found").hide();
     console.log(`Received exchange rates based on currency: ${response.base_code}`);
-    // response.PROPERTY = outputCurrency;
+    // // // response.PROPERTY = outputCurrency;
     userQuery.response = response;
     showExchangeRate(userQuery);
   }
