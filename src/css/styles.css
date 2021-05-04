@@ -1,0 +1,21 @@
+main {
+  padding: 2vw;
+}
+
+#currency-submit {
+  cursor: pointer;
+  width: fit-content;
+  margin: auto;
+  padding: 1% 2%;
+  font-weight: 900;
+  background-color: #f2f2f2A0;
+}
+
+#currency-submit:hover {
+  cursor: pointer;
+  background-color: #f2f2f2FF;
+}
+
+#result {
+  padding: 10px;
+}

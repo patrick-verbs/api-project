@@ -41,7 +41,7 @@ function showExchangeRate(userQuery) {
 
   let conversionRate;
 
-  userQuery.progress_log.append(`<li><ul>Searching for output currency "${userQuery.output_currency}":`);
+  userQuery.progress_log.append(`</ul>. . .<br>Searching for output currency "${userQuery.output_currency}":<ul>`);
   for (const currency in allCurrencies) {
     userQuery.progress_log.append(`<li>${currency}: ${allCurrencies[currency]}</li>`);
     if (currency === userQuery.output_currency) {
@@ -49,12 +49,12 @@ function showExchangeRate(userQuery) {
       break;
     }
   }
-  userQuery.progress_log.append(`</ul></li>`);
+  userQuery.progress_log.append(`</ul><ul>`);
 
   const convertedCurrency = (userQuery.input_quantity * conversionRate).toFixed(2);
 
   if (response.result === "success") {
-    $("#output-result").html(`<h3>${userQuery.input_quantity} ${userQuery.input_currency} converts to: <br> <strong><em>${convertedCurrency} ${userQuery.output_currency}</em></strong></h3>`);
+    $("#output-result").html(`<h3 id="result">${userQuery.input_quantity} ${userQuery.input_currency} converts to: <br> <strong><em>${convertedCurrency} ${userQuery.output_currency}</em></strong></h3>`);
   } else {
     printError(`An error occurred: <em>${response["error-type"]}</em>. Please verify the URL, including your private API key.`);
   }
@@ -126,10 +126,10 @@ $(document).ready(function () {
     const inputQuantityShortened = inputQuantity.toFixed(2);
     if (isNaN(inputQuantity)
     || inputQuantity < 0
-    || inputQuantity > 10000000000000
+    || inputQuantity > 1000000000000000
     || inputQuantityShortened != inputQuantity) {
       inputErrors = true;
-      printError(`"${inputQuantity}" is not a valid number between 0 and 10 trillion, or exceeds the two-decimal-place limit.`);
+      printError(`"${inputQuantity}" is not a valid number between 0 and 1 quadrillion, or exceeds the two-decimal-place limit.`);
     }
 
     if (!inputErrors) {
